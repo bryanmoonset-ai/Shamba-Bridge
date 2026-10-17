@@ -8,6 +8,195 @@
   <style>
     * {
       box-sizing: border-box;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SokoLink Kenya</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7f2;color:#203329}
+header{background:#176b43;color:white;padding:20px}
+header h1{margin:0;font-size:27px}
+header p{margin:6px 0 0}
+nav{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+button{border:0;padding:12px 16px;border-radius:8px;background:#176b43;color:white;font-weight:bold;cursor:pointer}
+nav button{background:white;color:#176b43}
+.hero{padding:30px 20px;background:#e4f2e8}
+.hero h2{font-size:27px;margin:0 0 10px}
+.container{padding:20px;max-width:900px;margin:auto}
+.card{background:white;padding:18px;margin-bottom:15px;border-radius:12px;box-shadow:0 2px 8px #00000010}
+input,select,textarea{width:100%;padding:13px;margin:8px 0;border:1px solid #ccc;border-radius:7px;font-size:16px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.product{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px #00000010}
+.product .emoji{font-size:45px}
+.product h3{margin:8px 0}
+.price{color:#176b43;font-size:20px;font-weight:bold}
+.small{color:#68776d;font-size:13px}
+.hidden{display:none}
+footer{text-align:center;padding:25px;background:#173c2c;color:white;margin-top:30px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🌱 SokoLink</h1>
+<p>Connecting Farmers, Buyers and Markets</p>
+<nav>
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('sell')">Sell Produce</button>
+<button onclick="showPage('about')">About Us</button>
+</nav>
+</header>
+
+<section class="hero">
+<h2>Welcome to SokoLink Kenya!</h2>
+<p>Your marketplace for fresh agricultural produce.</p>
+<p>Farmers meet buyers. Businesses find suppliers.</p>
+<button onclick="showPage('sell')">Start Selling</button>
+</section>
+
+<main class="container">
+
+<section id="home">
+<h2>Find Agricultural Products</h2>
+<input id="search" placeholder="Search products or locations..." oninput="renderProducts()">
+<select id="category" onchange="renderProducts()">
+<option value="">All categories</option>
+<option>Fruits</option>
+<option>Vegetables</option>
+<option>Herbs</option>
+<option>Cereals</option>
+<option>Other</option>
+</select>
+<div id="products" class="products"></div>
+</section>
+
+<section id="sell" class="hidden">
+<div class="card">
+<h2>List Your Produce</h2>
+<p>Enter your product details to connect with potential buyers.</p>
+<form id="productForm">
+<label>Product name</label>
+<input id="name" placeholder="e.g. Passion fruits" required>
+
+<label>Category</label>
+<select id="type" required>
+<option value="">Choose category</option>
+<option>Fruits</option>
+<option>Vegetables</option>
+<option>Herbs</option>
+<option>Cereals</option>
+<option>Other</option>
+</select>
+
+<label>Price (KSh)</label>
+<input id="price" type="number" min="1" placeholder="Price per kg" required>
+
+<label>Quantity available (kg)</label>
+<input id="quantity" type="number" min="1" required>
+
+<label>Your location</label>
+<input id="location" placeholder="e.g. Nyamira County" required>
+
+<label>WhatsApp number (with country code)</label>
+<input id="phone" type="tel" placeholder="2547XXXXXXXX" required>
+
+<button type="submit">Publish Product</button>
+</form>
+</div>
+</section>
+
+<section id="about" class="hidden">
+<div class="card">
+<h2>About SokoLink</h2>
+<p>SokoLink is a Kenyan agricultural marketplace designed to connect farmers, retailers, wholesalers and companies.</p>
+<h3>Our mission</h3>
+<p>To make agricultural trade easier, more transparent and accessible.</p>
+<p><strong>Built in Kenya 🇰🇪</strong></p>
+</div>
+</section>
+
+</main>
+
+<footer>
+<h3>SokoLink Kenya 🌱</h3>
+<p>Growing markets. Connecting opportunities.</p>
+<p>© 2026 SokoLink. All rights reserved.</p>
+</footer>
+
+<script>
+let products=JSON.parse(localStorage.getItem("sokolink_products")||"[]");
+
+function showPage(page){
+["home","sell","about"].forEach(id=>{
+document.getElementById(id).classList.toggle("hidden",id!==page);
+});
+window.scrollTo(0,0);
+}
+
+function renderProducts(){
+let search=document.getElementById("search").value.toLowerCase();
+let category=document.getElementById("category").value;
+let list=products.filter(p=>
+(p.name.toLowerCase().includes(search)||
+p.location.toLowerCase().includes(search))&&
+(!category||p.type===category)
+);
+let container=document.getElementById("products");
+container.innerHTML="";
+if(!list.length){
+container.innerHTML="<p>No products listed yet. Be the first farmer to sell!</p>";
+return;
+}
+list.forEach(p=>{
+let card=document.createElement("div");
+card.className="product";
+card.innerHTML=`
+<div class="emoji">🌿</div>
+<h3></h3>
+<p class="price"></p>
+<p></p>
+<p class="small"></p>
+<a target="_blank" rel="noopener" href="https://wa.me/${p.phone}?text=${encodeURIComponent("Hello, I found your "+p.name+" listing on SokoLink. Is it available?")}">
+<button>Contact Seller on WhatsApp</button></a>`;
+card.querySelector("h3").textContent=p.name;
+card.querySelector(".price").textContent="KSh "+p.price+" / kg";
+card.querySelectorAll("p")[1].textContent=p.quantity+" kg available";
+card.querySelectorAll("p")[2].textContent=p.type+" • "+p.location;
+container.appendChild(card);
+});
+}
+
+document.getElementById("productForm").addEventListener("submit",function(e){
+e.preventDefault();
+let phone=document.getElementById("phone").value.replace(/\D/g,"");
+if(phone.length<10){
+alert("Please enter a valid WhatsApp number with country code.");
+return;
+}
+let product={
+name:document.getElementById("name").value.trim(),
+type:document.getElementById("type").value,
+price:Number(document.getElementById("price").value),
+quantity:Number(document.getElementById("quantity").value),
+location:document.getElementById("location").value.trim(),
+phone:phone
+};
+products.unshift(product);
+localStorage.setItem("sokolink_products",JSON.stringify(products));
+this.reset();
+renderProducts();
+showPage("home");
+alert("Your product has been listed on this device!");
+});
+
+renderProducts();
+</script>
+</body>
+</html>
+
     }
 
     body {
