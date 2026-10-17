@@ -2,40 +2,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SokoLink Kenya</title>
-  <style>
-    * {
-      box-sizing: border-box;
-<!DOCTYPE html>
-<html lang="en">
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SokoLink Kenya</title>
+<title>SokoLink Kenya | Agricultural Marketplace</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f4f7f2;color:#203329}
-header{background:#176b43;color:white;padding:20px}
-header h1{margin:0;font-size:27px}
-header p{margin:6px 0 0}
-nav{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
-button{border:0;padding:12px 16px;border-radius:8px;background:#176b43;color:white;font-weight:bold;cursor:pointer}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f8f4;color:#203329}
+header{background:#176b43;color:white;padding:22px 18px}
+header h1{margin:0;font-size:30px}
+header p{margin:7px 0}
+nav{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+button{border:0;padding:13px 17px;border-radius:8px;background:#176b43;color:white;font-weight:bold;cursor:pointer}
 nav button{background:white;color:#176b43}
-.hero{padding:30px 20px;background:#e4f2e8}
-.hero h2{font-size:27px;margin:0 0 10px}
-.container{padding:20px;max-width:900px;margin:auto}
-.card{background:white;padding:18px;margin-bottom:15px;border-radius:12px;box-shadow:0 2px 8px #00000010}
-input,select,textarea{width:100%;padding:13px;margin:8px 0;border:1px solid #ccc;border-radius:7px;font-size:16px}
-.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-.product{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px #00000010}
-.product .emoji{font-size:45px}
+.hero{padding:40px 20px;background:#e1f1e5;text-align:center}
+.hero h2{font-size:30px;margin:0 0 12px}
+.container{max-width:950px;margin:auto;padding:22px 16px}
+.card,.product{background:white;padding:20px;border-radius:12px;box-shadow:0 2px 9px #00000010;margin-bottom:16px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
 .product h3{margin:8px 0}
-.price{color:#176b43;font-size:20px;font-weight:bold}
-.small{color:#68776d;font-size:13px}
+.price{font-size:21px;font-weight:bold;color:#176b43}
+input,select{width:100%;padding:13px;margin:8px 0 15px;border:1px solid #ccc;border-radius:7px;font-size:16px}
+label{font-weight:bold}
+.small{font-size:13px;color:#68776d}
 .hidden{display:none}
-footer{text-align:center;padding:25px;background:#173c2c;color:white;margin-top:30px}
+footer{background:#173c2c;color:white;text-align:center;padding:25px;margin-top:35px}
 </style>
 </head>
 <body>
@@ -52,15 +42,14 @@ footer{text-align:center;padding:25px;background:#173c2c;color:white;margin-top:
 
 <section class="hero">
 <h2>Welcome to SokoLink Kenya!</h2>
-<p>Your marketplace for fresh agricultural produce.</p>
-<p>Farmers meet buyers. Businesses find suppliers.</p>
+<p>Find fresh agricultural produce directly from farmers.</p>
 <button onclick="showPage('sell')">Start Selling</button>
 </section>
 
 <main class="container">
 
 <section id="home">
-<h2>Find Agricultural Products</h2>
+<h2>Discover Agricultural Produce</h2>
 <input id="search" placeholder="Search products or locations..." oninput="renderProducts()">
 <select id="category" onchange="renderProducts()">
 <option value="">All categories</option>
@@ -76,7 +65,7 @@ footer{text-align:center;padding:25px;background:#173c2c;color:white;margin-top:
 <section id="sell" class="hidden">
 <div class="card">
 <h2>List Your Produce</h2>
-<p>Enter your product details to connect with potential buyers.</p>
+<p>Connect with buyers by advertising your products.</p>
 <form id="productForm">
 <label>Product name</label>
 <input id="name" placeholder="e.g. Passion fruits" required>
@@ -91,19 +80,19 @@ footer{text-align:center;padding:25px;background:#173c2c;color:white;margin-top:
 <option>Other</option>
 </select>
 
-<label>Price (KSh)</label>
-<input id="price" type="number" min="1" placeholder="Price per kg" required>
+<label>Price per kg (KSh)</label>
+<input id="price" type="number" min="1" required>
 
 <label>Quantity available (kg)</label>
 <input id="quantity" type="number" min="1" required>
 
-<label>Your location</label>
+<label>Location</label>
 <input id="location" placeholder="e.g. Nyamira County" required>
 
-<label>WhatsApp number (with country code)</label>
+<label>WhatsApp number</label>
 <input id="phone" type="tel" placeholder="2547XXXXXXXX" required>
 
-<button type="submit">Publish Product</button>
+<button type="submit">Publish Produce</button>
 </form>
 </div>
 </section>
@@ -111,23 +100,29 @@ footer{text-align:center;padding:25px;background:#173c2c;color:white;margin-top:
 <section id="about" class="hidden">
 <div class="card">
 <h2>About SokoLink</h2>
-<p>SokoLink is a Kenyan agricultural marketplace designed to connect farmers, retailers, wholesalers and companies.</p>
+<p>SokoLink is a Kenyan agricultural marketplace connecting farmers, retailers, wholesalers and businesses.</p>
 <h3>Our mission</h3>
-<p>To make agricultural trade easier, more transparent and accessible.</p>
-<p><strong>Built in Kenya 🇰🇪</strong></p>
+<p>To make agricultural trade easier, transparent and accessible to everyone.</p>
+<h3>Our vision</h3>
+<p>A connected agricultural market where farmers can reach better buyers and businesses can find reliable suppliers.</p>
+<p><strong>Made in Kenya 🇰🇪</strong></p>
 </div>
 </section>
 
 </main>
 
 <footer>
-<h3>SokoLink Kenya 🌱</h3>
+<h3>🌱 SokoLink Kenya</h3>
 <p>Growing markets. Connecting opportunities.</p>
 <p>© 2026 SokoLink. All rights reserved.</p>
 </footer>
 
 <script>
-let products=JSON.parse(localStorage.getItem("sokolink_products")||"[]");
+let products=[];
+try{
+products=JSON.parse(localStorage.getItem("sokolink_products")||"[]");
+if(!Array.isArray(products))products=[];
+}catch(e){products=[];}
 
 function showPage(page){
 ["home","sell","about"].forEach(id=>{
@@ -137,46 +132,70 @@ window.scrollTo(0,0);
 }
 
 function renderProducts(){
-let search=document.getElementById("search").value.toLowerCase();
-let category=document.getElementById("category").value;
-let list=products.filter(p=>
+const search=document.getElementById("search").value.toLowerCase();
+const category=document.getElementById("category").value;
+const container=document.getElementById("products");
+
+const filtered=products.filter(p=>
 (p.name.toLowerCase().includes(search)||
 p.location.toLowerCase().includes(search))&&
 (!category||p.type===category)
 );
-let container=document.getElementById("products");
+
 container.innerHTML="";
-if(!list.length){
-container.innerHTML="<p>No products listed yet. Be the first farmer to sell!</p>";
+
+if(filtered.length===0){
+container.textContent="No products listed yet. Be the first farmer to sell!";
 return;
 }
-list.forEach(p=>{
-let card=document.createElement("div");
+
+filtered.forEach(p=>{
+const card=document.createElement("div");
 card.className="product";
-card.innerHTML=`
-<div class="emoji">🌿</div>
-<h3></h3>
-<p class="price"></p>
-<p></p>
-<p class="small"></p>
-<a target="_blank" rel="noopener" href="https://wa.me/${p.phone}?text=${encodeURIComponent("Hello, I found your "+p.name+" listing on SokoLink. Is it available?")}">
-<button>Contact Seller on WhatsApp</button></a>`;
-card.querySelector("h3").textContent=p.name;
-card.querySelector(".price").textContent="KSh "+p.price+" / kg";
-card.querySelectorAll("p")[1].textContent=p.quantity+" kg available";
-card.querySelectorAll("p")[2].textContent=p.type+" • "+p.location;
+
+const emoji=document.createElement("div");
+emoji.style.fontSize="40px";
+emoji.textContent="🌿";
+
+const title=document.createElement("h3");
+title.textContent=p.name;
+
+const price=document.createElement("p");
+price.className="price";
+price.textContent="KSh "+p.price+" / kg";
+
+const quantity=document.createElement("p");
+quantity.textContent=p.quantity+" kg available";
+
+const location=document.createElement("p");
+location.className="small";
+location.textContent=p.type+" • "+p.location;
+
+const link=document.createElement("a");
+link.href="https://wa.me/"+p.phone+"?text="+encodeURIComponent("Hello, I found your "+p.name+" listing on SokoLink. Is it available?");
+link.target="_blank";
+link.rel="noopener";
+
+const button=document.createElement("button");
+button.textContent="Contact Seller on WhatsApp";
+
+link.appendChild(button);
+card.append(emoji,title,price,quantity,location,link);
 container.appendChild(card);
 });
 }
 
 document.getElementById("productForm").addEventListener("submit",function(e){
 e.preventDefault();
-let phone=document.getElementById("phone").value.replace(/\D/g,"");
+
+const phone=document.getElementById("phone").value.replace(/\D/g,"");
+
 if(phone.length<10){
 alert("Please enter a valid WhatsApp number with country code.");
 return;
 }
-let product={
+
+const product={
 name:document.getElementById("name").value.trim(),
 type:document.getElementById("type").value,
 price:Number(document.getElementById("price").value),
@@ -184,196 +203,23 @@ quantity:Number(document.getElementById("quantity").value),
 location:document.getElementById("location").value.trim(),
 phone:phone
 };
+
 products.unshift(product);
+
+try{
 localStorage.setItem("sokolink_products",JSON.stringify(products));
+}catch(e){
+alert("Could not save product on this device.");
+return;
+}
+
 this.reset();
 renderProducts();
 showPage("home");
-alert("Your product has been listed on this device!");
+alert("Product successfully listed!");
 });
 
 renderProducts();
-</script>
-</body>
-</html>
-
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7f2;
-      color: #183326;
-    }
-
-    header {
-      background: #176b43;
-      color: white;
-      padding: 22px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-
-    header p {
-      margin-bottom: 0;
-    }
-
-    .hero {
-      padding: 30px 20px;
-      background: #e4f2e8;
-    }
-
-    .hero h2 {
-      font-size: 27px;
-    }
-
-    button {
-      border: none;
-      background: #176b43;
-      color: white;
-      padding: 13px 20px;
-      border-radius: 8px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    .container {
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      padding: 18px;
-      margin-bottom: 15px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px #00000010;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 13px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      font-size: 15px;
-    }
-
-    .products {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .product {
-      background: white;
-      padding: 15px;
-      border-radius: 12px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #666;
-    }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <h1>🌱 SokoLink</h1>
-  <p>Connecting Kenyan farmers to better markets.</p>
-</header>
-
-<section class="hero">
-  <h2>Your Market. Your Opportunity.</h2>
-  <p>Buy and sell agricultural produce directly across Kenya.</p>
-  <button onclick="document.getElementById('register').scrollIntoView()">
-    Join SokoLink
-  </button>
-</section>
-
-<div class="container">
-
-  <h2>Explore SokoLink</h2>
-
-  <div class="card">
-    <h3>👨‍🌾 For Farmers</h3>
-    <p>Find buyers and showcase your produce.</p>
-  </div>
-
-  <div class="card">
-    <h3>🏪 For Buyers</h3>
-    <p>Connect directly with farmers and suppliers.</p>
-  </div>
-
-  <h2>Available Produce</h2>
-
-  <div class="products">
-    <div class="product">
-      <h3>🥑 Avocados</h3>
-      <p>Fresh farm produce</p>
-    </div>
-    <div class="product">
-      <h3>🍅 Tomatoes</h3>
-      <p>Fresh market supply</p>
-    </div>
-    <div class="product">
-      <h3>🌶️ Vegetables</h3>
-      <p>Direct from farmers</p>
-    </div>
-    <div class="product">
-      <h3>🍈 Passion Fruits</h3>
-      <p>Quality farm produce</p>
-    </div>
-  </div>
-
-  <section id="register" class="card" style="margin-top:25px">
-    <h2>Join SokoLink</h2>
-
-    <input id="name" placeholder="Your full name">
-
-    <input id="phone" placeholder="Phone number">
-
-    <select id="role">
-      <option value="">I am a...</option>
-      <option>Farmer</option>
-      <option>Buyer</option>
-      <option>Retailer</option>
-      <option>Company</option>
-    </select>
-
-    <button onclick="registerUser()">Register</button>
-
-    <p id="message"></p>
-  </section>
-
-</div>
-
-<footer>
-  <p>© 2026 SokoLink Kenya</p>
-  <p>Growing markets. Connecting people.</p>
-</footer>
-
-<script>
-function registerUser() {
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const role = document.getElementById("role").value;
-
-  if (!name || !phone || !role) {
-    document.getElementById("message").textContent =
-      "Please fill in all fields.";
-    return;
-  }
-
-  document.getElementById("message").textContent =
-    "Welcome to SokoLink, " + name +
-    "! Your registration demo is successful.";
-}
 </script>
 
 </body>
