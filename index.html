@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SokoLink Kenya</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7f2;
+      color: #183326;
+    }
+
+    header {
+      background: #176b43;
+      color: white;
+      padding: 22px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin-bottom: 0;
+    }
+
+    .hero {
+      padding: 30px 20px;
+      background: #e4f2e8;
+    }
+
+    .hero h2 {
+      font-size: 27px;
+    }
+
+    button {
+      border: none;
+      background: #176b43;
+      color: white;
+      padding: 13px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 18px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #00000010;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .product {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌱 SokoLink</h1>
+  <p>Connecting Kenyan farmers to better markets.</p>
+</header>
+
+<section class="hero">
+  <h2>Your Market. Your Opportunity.</h2>
+  <p>Buy and sell agricultural produce directly across Kenya.</p>
+  <button onclick="document.getElementById('register').scrollIntoView()">
+    Join SokoLink
+  </button>
+</section>
+
+<div class="container">
+
+  <h2>Explore SokoLink</h2>
+
+  <div class="card">
+    <h3>👨‍🌾 For Farmers</h3>
+    <p>Find buyers and showcase your produce.</p>
+  </div>
+
+  <div class="card">
+    <h3>🏪 For Buyers</h3>
+    <p>Connect directly with farmers and suppliers.</p>
+  </div>
+
+  <h2>Available Produce</h2>
+
+  <div class="products">
+    <div class="product">
+      <h3>🥑 Avocados</h3>
+      <p>Fresh farm produce</p>
+    </div>
+    <div class="product">
+      <h3>🍅 Tomatoes</h3>
+      <p>Fresh market supply</p>
+    </div>
+    <div class="product">
+      <h3>🌶️ Vegetables</h3>
+      <p>Direct from farmers</p>
+    </div>
+    <div class="product">
+      <h3>🍈 Passion Fruits</h3>
+      <p>Quality farm produce</p>
+    </div>
+  </div>
+
+  <section id="register" class="card" style="margin-top:25px">
+    <h2>Join SokoLink</h2>
+
+    <input id="name" placeholder="Your full name">
+
+    <input id="phone" placeholder="Phone number">
+
+    <select id="role">
+      <option value="">I am a...</option>
+      <option>Farmer</option>
+      <option>Buyer</option>
+      <option>Retailer</option>
+      <option>Company</option>
+    </select>
+
+    <button onclick="registerUser()">Register</button>
+
+    <p id="message"></p>
+  </section>
+
+</div>
+
+<footer>
+  <p>© 2026 SokoLink Kenya</p>
+  <p>Growing markets. Connecting people.</p>
+</footer>
+
+<script>
+function registerUser() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const role = document.getElementById("role").value;
+
+  if (!name || !phone || !role) {
+    document.getElementById("message").textContent =
+      "Please fill in all fields.";
+    return;
+  }
+
+  document.getElementById("message").textContent =
+    "Welcome to SokoLink, " + name +
+    "! Your registration demo is successful.";
+}
+</script>
+
+</body>
+</html>
