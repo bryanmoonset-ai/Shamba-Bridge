@@ -5,6 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ShambaBridge Kenya | Agricultural Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f4f8f4;color:#203329}
@@ -13,6 +16,7 @@ header h1{margin:0;font-size:30px}
 header p{margin:7px 0}
 nav{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
 button{border:0;padding:13px 17px;border-radius:8px;background:#176b43;color:white;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.6}
 nav button{background:white;color:#176b43}
 .hero{padding:40px 20px;background:#e1f1e5;text-align:center}
 .hero h2{font-size:30px;margin:0 0 12px}
@@ -26,8 +30,10 @@ label{font-weight:bold}
 .small{font-size:13px;color:#68776d}
 .hidden{display:none}
 footer{background:#173c2c;color:white;text-align:center;padding:25px;margin-top:35px}
+.status{padding:12px;background:#e1f1e5;border-radius:8px;margin:12px 0}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -50,7 +56,9 @@ footer{background:#173c2c;color:white;text-align:center;padding:25px;margin-top:
 
 <section id="home">
 <h2>Discover Agricultural Produce</h2>
+
 <input id="search" placeholder="Search products or locations..." oninput="renderProducts()">
+
 <select id="category" onchange="renderProducts()">
 <option value="">All categories</option>
 <option>Fruits</option>
@@ -59,14 +67,37 @@ footer{background:#173c2c;color:white;text-align:center;padding:25px;margin-top:
 <option>Cereals</option>
 <option>Other</option>
 </select>
+
 <div id="products" class="products"></div>
 </section>
 
 <section id="sell" class="hidden">
+
+<div class="card">
+<h2>Farmer Account</h2>
+<p>Create an account or log in before listing produce.</p>
+
+<form id="authForm">
+<label>Email address</label>
+<input id="email" type="email" placeholder="Your email address" required>
+
+<label>Password</label>
+<input id="password" type="password" minlength="6" placeholder="At least 6 characters" required>
+
+<button type="button" onclick="signUp()">Create Account</button>
+<button type="button" onclick="signIn()">Log In</button>
+<button type="button" onclick="signOut()">Log Out</button>
+</form>
+
+<div id="authStatus" class="status">Checking account...</div>
+</div>
+
 <div class="card">
 <h2>List Your Produce</h2>
 <p>Connect with buyers by advertising your products.</p>
+
 <form id="productForm">
+
 <label>Product name</label>
 <input id="name" placeholder="e.g. Passion fruits" required>
 
@@ -92,19 +123,24 @@ footer{background:#173c2c;color:white;text-align:center;padding:25px;margin-top:
 <label>WhatsApp number</label>
 <input id="phone" type="tel" placeholder="2547XXXXXXXX" required>
 
-<button type="submit">Publish Produce</button>
+<button type="submit" id="submitButton">Submit Produce for Approval</button>
 </form>
+
+<p class="small">Your listing will only appear publicly after admin approval.</p>
 </div>
 </section>
 
 <section id="about" class="hidden">
 <div class="card">
-<h2>About SokoLink</h2>
-<p>SokoLink is a Kenyan agricultural marketplace connecting farmers, retailers, wholesalers and businesses.</p>
+<h2>About ShambaBridge</h2>
+<p>ShambaBridge is a Kenyan agricultural marketplace connecting farmers, retailers, wholesalers and businesses.</p>
+
 <h3>Our mission</h3>
 <p>To make agricultural trade easier, transparent and accessible to everyone.</p>
+
 <h3>Our vision</h3>
 <p>A connected agricultural market where farmers can reach better buyers and businesses can find reliable suppliers.</p>
+
 <p><strong>Made in Kenya 🇰🇪</strong></p>
 </div>
 </section>
@@ -112,114 +148,266 @@ footer{background:#173c2c;color:white;text-align:center;padding:25px;margin-top:
 </main>
 
 <footer>
-<h3>🌱 SokoLink Kenya</h3>
+<h3>🌱 ShambaBridge Kenya</h3>
 <p>Growing markets. Connecting opportunities.</p>
-<p>© 2026 SokoLink. All rights reserved.</p>
+<p>© 2026 ShambaBridge. All rights reserved.</p>
 </footer>
 
 <script>
-let products=[];
-try{
-products=JSON.parse(localStorage.getItem("sokolink_products")||"[]");
-if(!Array.isArray(products))products=[];
-}catch(e){products=[];}
 
-function showPage(page){
-["home","sell","about"].forEach(id=>{
-document.getElementById(id).classList.toggle("hidden",id!==page);
-});
-window.scrollTo(0,0);
-}
+// SUPABASE CONNECTION
 
-function renderProducts(){
-const search=document.getElementById("search").value.toLowerCase();
-const category=document.getElementById("category").value;
-const container=document.getElementById("products");
+const SUPABASE_URL = "https://jujpzwajlcxxnoaxsaps.supabase.co";
 
-const filtered=products.filter(p=>
-(p.name.toLowerCase().includes(search)||
-p.location.toLowerCase().includes(search))&&
-(!category||p.type===category)
+const SUPABASE_KEY = "sb_publishable_dSOZvnGKaLjFTygC-AntFA_GjV1qfmv";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
-container.innerHTML="";
+let products = [];
+let currentUser = null;
 
-if(filtered.length===0){
-container.textContent="No products listed yet. Be the first farmer to sell!";
-return;
+// NAVIGATION
+
+function showPage(page){
+    ["home","sell","about"].forEach(id=>{
+        document.getElementById(id).classList.toggle("hidden",id!==page);
+    });
+    window.scrollTo(0,0);
 }
 
-filtered.forEach(p=>{
-const card=document.createElement("div");
-card.className="product";
+// ACCOUNT MANAGEMENT
 
-const emoji=document.createElement("div");
-emoji.style.fontSize="40px";
-emoji.textContent="🌿";
+async function updateAuthStatus(){
+    const {data,error} = await supabaseClient.auth.getUser();
 
-const title=document.createElement("h3");
-title.textContent=p.name;
+    currentUser = data.user;
 
-const price=document.createElement("p");
-price.className="price";
-price.textContent="KSh "+p.price+" / kg";
+    const status = document.getElementById("authStatus");
 
-const quantity=document.createElement("p");
-quantity.textContent=p.quantity+" kg available";
+    if(error || !currentUser){
+        status.textContent = "Please create an account or log in to submit produce.";
+    }else{
+        status.textContent = "Logged in as: " + currentUser.email;
+    }
+}
 
-const location=document.createElement("p");
-location.className="small";
-location.textContent=p.type+" • "+p.location;
+async function signUp(){
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-const link=document.createElement("a");
-link.href="https://wa.me/"+p.phone+"?text="+encodeURIComponent("Hello, I found your "+p.name+" listing on SokoLink. Is it available?");
-link.target="_blank";
-link.rel="noopener";
+    if(!email || password.length < 6){
+        alert("Enter a valid email and password of at least 6 characters.");
+        return;
+    }
 
-const button=document.createElement("button");
-button.textContent="Contact Seller on WhatsApp";
+    const {data,error} = await supabaseClient.auth.signUp({
+        email,
+        password
+    });
 
-link.appendChild(button);
-card.append(emoji,title,price,quantity,location,link);
-container.appendChild(card);
+    if(error){
+        alert("Registration failed: " + error.message);
+        return;
+    }
+
+    if(data.session){
+        alert("Account created successfully!");
+    }else{
+        alert("Account created. Check your email for the confirmation link, then log in.");
+    }
+
+    await updateAuthStatus();
+}
+
+async function signIn(){
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const {error} = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+    });
+
+    if(error){
+        alert("Login failed: " + error.message);
+        return;
+    }
+
+    await updateAuthStatus();
+    alert("Welcome to ShambaBridge!");
+}
+
+async function signOut(){
+    const {error} = await supabaseClient.auth.signOut();
+
+    if(error){
+        alert(error.message);
+        return;
+    }
+
+    await updateAuthStatus();
+    alert("You have logged out.");
+}
+
+// LOAD APPROVED PRODUCTS
+
+async function loadProducts(){
+
+    const container = document.getElementById("products");
+    container.textContent = "Loading agricultural produce...";
+
+    const {data,error} = await supabaseClient
+        .from("Shambabridge")
+        .select('*')
+        .eq("approval_status","approved")
+        .order("Created at",{ascending:false});
+
+    if(error){
+        container.textContent = "Could not load products: " + error.message;
+        return;
+    }
+
+    products = data || [];
+    renderProducts();
+}
+
+// DISPLAY PRODUCTS
+
+function renderProducts(){
+
+    const search = document.getElementById("search").value.toLowerCase();
+    const category = document.getElementById("category").value;
+    const container = document.getElementById("products");
+
+    const filtered = products.filter(p => {
+
+        const name = (p["Product name"] || "").toLowerCase();
+        const location = (p["Location"] || "").toLowerCase();
+
+        return (
+            (name.includes(search) || location.includes(search)) &&
+            (!category || p["Category"] === category)
+        );
+    });
+
+    container.innerHTML = "";
+
+    if(filtered.length === 0){
+        container.textContent = "No approved products listed yet. Be the first farmer to sell!";
+        return;
+    }
+
+    filtered.forEach(p => {
+
+        const card = document.createElement("div");
+        card.className = "product";
+
+        const emoji = document.createElement("div");
+        emoji.style.fontSize = "40px";
+        emoji.textContent = "🌿";
+
+        const title = document.createElement("h3");
+        title.textContent = p["Product name"];
+
+        const price = document.createElement("p");
+        price.className = "price";
+        price.textContent = "KSh " + p["Price"] + " / " + (p["Unit"] || "kg");
+
+        const quantity = document.createElement("p");
+        quantity.textContent = p["Quantity"] + " " + (p["Unit"] || "kg") + " available";
+
+        const location = document.createElement("p");
+        location.className = "small";
+        location.textContent = p["Category"] + " • " + p["Location"];
+
+        const link = document.createElement("a");
+
+        link.href = "https://wa.me/" +
+            (p["WhatsApp number"] || "") +
+            "?text=" +
+            encodeURIComponent("Hello, I found your " + p["Product name"] + " listing on ShambaBridge. Is it available?");
+
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+
+        const button = document.createElement("button");
+        button.textContent = "Contact Seller on WhatsApp";
+
+        link.appendChild(button);
+
+        card.append(emoji,title,price,quantity,location,link);
+        container.appendChild(card);
+    });
+}
+
+// SUBMIT FARMER LISTING
+
+document.getElementById("productForm").addEventListener("submit",async function(e){
+
+    e.preventDefault();
+
+    const {data:userData,error:userError} = await supabaseClient.auth.getUser();
+
+    if(userError || !userData.user){
+        alert("Please create an account or log in before submitting produce.");
+        return;
+    }
+
+    const phone = document.getElementById("phone").value.replace(/\D/g,"");
+
+    if(phone.length < 10){
+        alert("Please enter a valid WhatsApp number with country code.");
+        return;
+    }
+
+    const product = {
+        "Product name": document.getElementById("name").value.trim(),
+        "Category": document.getElementById("type").value,
+        "Quantity": Number(document.getElementById("quantity").value),
+        "Unit": "kg",
+        "Price": Number(document.getElementById("price").value),
+        "Location": document.getElementById("location").value.trim(),
+        "WhatsApp number": phone,
+        "approval_status": "pending"
+    };
+
+    const submitButton = document.getElementById("submitButton");
+    submitButton.disabled = true;
+    submitButton.textContent = "Submitting...";
+
+    const {error} = await supabaseClient
+        .from("Shambabridge")
+        .insert([product]);
+
+    submitButton.disabled = false;
+    submitButton.textContent = "Submit Produce for Approval";
+
+    if(error){
+        alert("Submission failed: " + error.message);
+        return;
+    }
+
+    this.reset();
+
+    alert("Your produce has been submitted successfully! It will appear in the marketplace after admin approval.");
+
+    showPage("home");
+    await loadProducts();
+
 });
-}
 
-document.getElementById("productForm").addEventListener("submit",function(e){
-e.preventDefault();
+// INITIALIZE APPLICATION
 
-const phone=document.getElementById("phone").value.replace(/\D/g,"");
-
-if(phone.length<10){
-alert("Please enter a valid WhatsApp number with country code.");
-return;
-}
-
-const product={
-name:document.getElementById("name").value.trim(),
-type:document.getElementById("type").value,
-price:Number(document.getElementById("price").value),
-quantity:Number(document.getElementById("quantity").value),
-location:document.getElementById("location").value.trim(),
-phone:phone
-};
-
-products.unshift(product);
-
-try{
-localStorage.setItem("sokolink_products",JSON.stringify(products));
-}catch(e){
-alert("Could not save product on this device.");
-return;
-}
-
-this.reset();
-renderProducts();
-showPage("home");
-alert("Product successfully listed!");
+supabaseClient.auth.onAuthStateChange(()=>{
+    setTimeout(updateAuthStatus,0);
 });
 
-renderProducts();
+updateAuthStatus();
+loadProducts();
+
 </script>
 
 </body>
