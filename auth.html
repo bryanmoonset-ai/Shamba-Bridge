@@ -1,0 +1,503 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShambaBridge | Secure Access</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #edf5ed;
+  font-family: Arial, sans-serif;
+  color: #24352a;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 30px 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.09);
+}
+
+.logo {
+  text-align: center;
+  color: #176b38;
+  font-size: 29px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.tagline {
+  text-align: center;
+  color: #718071;
+  margin-bottom: 25px;
+}
+
+h2 {
+  text-align: center;
+  font-size: 21px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 7px;
+  font-weight: bold;
+}
+
+input, select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #d5ded5;
+  border-radius: 8px;
+  font-size: 15px;
+  background: white;
+}
+
+button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 13px;
+  border: none;
+  border-radius: 8px;
+  background: #176b38;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #e7f2e9;
+  color: #176b38;
+}
+
+button.danger {
+  background: #a52b2b;
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.links {
+  text-align: center;
+  margin-top: 18px;
+}
+
+.links button {
+  width: auto;
+  margin: 5px;
+  padding: 8px;
+  background: transparent;
+  color: #176b38;
+  text-decoration: underline;
+}
+
+.message {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 7px;
+  background: #edf5ed;
+  text-align: center;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.hidden {
+  display: none;
+}
+
+footer {
+  margin-top: 25px;
+  text-align: center;
+  font-size: 12px;
+  color: #819081;
+}
+</style>
+</head>
+
+<body>
+
+<div class="auth-card">
+
+  <div class="logo">🌱 ShambaBridge</div>
+  <div class="tagline">Connect. Trade. Grow.</div>
+
+  <section id="authSection">
+
+    <h2>Welcome Back</h2>
+
+    <label for="role">Account type</label>
+    <select id="role">
+      <option value="farmer">Farmer</option>
+      <option value="admin">Administrator</option>
+    </select>
+
+    <form id="authForm">
+
+      <label for="email">Email address</label>
+      <input
+        id="email"
+        type="email"
+        placeholder="Your email address"
+        autocomplete="email"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        placeholder="Your password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit" id="loginButton">
+        Log In
+      </button>
+
+    </form>
+
+    <button class="secondary" onclick="signUp()">
+      Create Farmer Account
+    </button>
+
+    <div class="links">
+      <button onclick="resetPassword()">
+        Forgot Password?
+      </button>
+    </div>
+
+  </section>
+
+  <section id="resetSection" class="hidden">
+
+    <h2>Reset Your Password</h2>
+
+    <label for="newPassword">New password</label>
+    <input
+      id="newPassword"
+      type="password"
+      minlength="6"
+      placeholder="Enter new password"
+    >
+
+    <button onclick="updatePassword()">
+      Update Password
+    </button>
+
+  </section>
+
+  <button class="danger hidden" id="logoutButton"
+    onclick="signOut()">
+    Log Out
+  </button>
+
+  <div id="authMessage" class="message hidden"
+    role="status" aria-live="polite"></div>
+
+  <footer>
+    © 2026 ShambaBridge. All rights reserved.
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+
+// ===================================
+// 1. SUPABASE CONNECTION
+// ===================================
+
+const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_OR_PUBLISHABLE_KEY";
+
+if (
+  SUPABASE_URL.includes("YOUR_SUPABASE") ||
+  SUPABASE_ANON_KEY.includes("YOUR_SUPABASE")
+) {
+  throw new Error("Please add your Supabase project credentials.");
+}
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+// ===================================
+// 2. PAGE ELEMENTS
+// ===================================
+
+const authSection = document.getElementById("authSection");
+const resetSection = document.getElementById("resetSection");
+const messageBox = document.getElementById("authMessage");
+const logoutButton = document.getElementById("logoutButton");
+
+function showMessage(message) {
+  messageBox.textContent = message;
+  messageBox.classList.remove("hidden");
+}
+
+function setLoading(loading) {
+  document.querySelectorAll(".auth-card button").forEach(button => {
+    button.disabled = loading;
+  });
+}
+
+// ===================================
+// 3. FARMER REGISTRATION
+// ===================================
+
+async function signUp() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!email || password.length < 6) {
+    showMessage("Enter a valid email and password of at least 6 characters.");
+    return;
+  }
+
+  setLoading(true);
+  showMessage("Creating your farmer account...");
+
+  try {
+    const { data, error } = await db.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: window.location.origin +
+          window.location.pathname
+      }
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      showMessage("Account created successfully. Please log in.");
+    } else {
+      showMessage("Account created! Check your email to verify it.");
+    }
+
+  } catch (error) {
+    showMessage(error.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ===================================
+// 4. LOGIN FOR FARMERS AND ADMINS
+// ===================================
+
+document.getElementById("authForm").addEventListener(
+  "submit",
+  async function(event) {
+
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const role = document.getElementById("role").value;
+
+    setLoading(true);
+    showMessage("Checking your credentials...");
+
+    try {
+      const { data, error } = await db.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) throw error;
+
+      const user = data.user;
+
+      if (role === "admin") {
+
+        const { data: isAdmin, error: adminError } =
+          await db.rpc("is_shambabridge_admin");
+
+        if (adminError) throw adminError;
+
+        if (isAdmin !== true) {
+          await db.auth.signOut();
+          throw new Error(
+            "Administrator access denied. Contact platform support."
+          );
+        }
+
+        showMessage("Administrator login successful!");
+
+        window.location.replace("admin.html");
+
+      } else {
+
+        showMessage("Farmer login successful!");
+
+        window.location.replace("dashboard.html");
+      }
+
+    } catch (error) {
+      showMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+);
+
+// ===================================
+// 5. FORGOT PASSWORD
+// ===================================
+
+async function resetPassword() {
+
+  const email = document.getElementById("email").value.trim();
+
+  if (!email) {
+    showMessage("Enter your email address first.");
+    return;
+  }
+
+  setLoading(true);
+  showMessage("Sending password recovery email...");
+
+  try {
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin +
+        window.location.pathname + "?mode=reset"
+    });
+
+    if (error) throw error;
+
+    showMessage("If the account exists, a recovery email has been sent.");
+
+  } catch (error) {
+    showMessage(error.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ===================================
+// 6. UPDATE PASSWORD
+// ===================================
+
+async function updatePassword() {
+
+  const newPassword = document.getElementById("newPassword").value;
+
+  if (newPassword.length < 6) {
+    showMessage("Password must contain at least 6 characters.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const { data: sessionData, error: sessionError } =
+      await db.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    if (!sessionData.session) {
+      throw new Error("Your recovery session has expired. Request another link.");
+    }
+
+    const { error } = await db.auth.updateUser({
+      password: newPassword
+    });
+
+    if (error) throw error;
+
+    await db.auth.signOut();
+
+    window.history.replaceState({}, "", window.location.pathname);
+
+    resetSection.classList.add("hidden");
+    authSection.classList.remove("hidden");
+
+    showMessage("Password updated successfully. You can now log in.");
+
+  } catch (error) {
+    showMessage(error.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ===================================
+// 7. LOGOUT
+// ===================================
+
+async function signOut() {
+
+  setLoading(true);
+
+  try {
+    const { error } = await db.auth.signOut();
+
+    if (error) throw error;
+
+    logoutButton.classList.add("hidden");
+    showMessage("You have successfully logged out.");
+
+  } catch (error) {
+    showMessage(error.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ===================================
+// 8. INITIAL PAGE CHECK
+// ===================================
+
+async function initializePage() {
+
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("mode") === "reset") {
+
+    authSection.classList.add("hidden");
+    resetSection.classList.remove("hidden");
+
+    showMessage("Enter your new password.");
+
+    return;
+  }
+
+  const { data, error } = await db.auth.getSession();
+
+  if (error) {
+    showMessage(error.message);
+    return;
+  }
+
+  if (data.session) {
+    logoutButton.classList.remove("hidden");
+  }
+}
+
+initializePage();
+
+</script>
+</body>
+</html>
