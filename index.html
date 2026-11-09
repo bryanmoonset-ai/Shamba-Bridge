@@ -4,184 +4,131 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14532d">
 <title>ShambaBridge | Agricultural Marketplace</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root {
-  --green:#176b38;
-  --dark:#104b29;
-  --light:#edf6ee;
-  --gold:#e5ae36;
+  --green:#166534;
+  --dark:#14532d;
+  --light:#f0fdf4;
+  --white:#ffffff;
+  --text:#1f2937;
+  --muted:#64748b;
+  --border:#e2e8f0;
 }
-
-* { box-sizing:border-box; }
-
+* {box-sizing:border-box}
 body {
   margin:0;
+  background:#f8fafc;
+  color:var(--text);
   font-family:Arial,sans-serif;
-  background:#f5f7f4;
-  color:#24352a;
 }
-
 header {
-  background:var(--green);
+  background:var(--dark);
   color:white;
-  padding:16px;
+  padding:18px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
   flex-wrap:wrap;
   gap:12px;
 }
-
-.logo { font-size:24px; font-weight:bold; }
-
-nav {
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
-}
-
-nav button {
-  background:transparent;
-  border:1px solid #ffffff70;
-  color:white;
-  padding:9px 12px;
-  border-radius:7px;
+.logo {font-size:23px;font-weight:bold}
+nav {display:flex;gap:8px;flex-wrap:wrap}
+button {
+  border:0;
+  border-radius:8px;
+  padding:11px 15px;
   cursor:pointer;
-}
-
-.container {
-  max-width:1100px;
-  margin:auto;
-  padding:20px;
-}
-
-.hero {
-  background:linear-gradient(120deg,#12532d,#25894b);
+  font-weight:bold;
+  background:var(--green);
   color:white;
-  padding:45px 25px;
-  border-radius:14px;
-  margin:15px 0 25px;
 }
-
-.hero h1 { font-size:34px; }
-
-.hero p {
-  line-height:1.7;
-  max-width:600px;
+button.secondary {background:#e2e8f0;color:#1e293b}
+button.google {background:#fff;color:#333;border:1px solid #ddd}
+button.danger {background:#b91c1c}
+button:disabled {opacity:.5;cursor:not-allowed}
+main {max-width:1100px;margin:auto;padding:18px}
+.hero {
+  background:linear-gradient(120deg,#14532d,#15803d);
+  color:white;
+  padding:36px 24px;
+  border-radius:16px;
+  margin-bottom:20px;
 }
-
-.section { display:none; }
-.section.active { display:block; }
-
+.hero h1 {font-size:34px;margin:0 0 10px}
+.hero p {line-height:1.6}
+.section {
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+  border:1px solid var(--border);
+}
 .grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-  gap:18px;
+  gap:15px;
 }
-
-.card {
-  background:white;
-  padding:18px;
-  border-radius:12px;
-  box-shadow:0 3px 12px #0000000d;
-}
-
-.product-image {
-  width:100%;
-  height:145px;
-  object-fit:cover;
-  border-radius:9px;
-  background:#edf6ee;
-}
-
-.price {
-  font-size:21px;
-  font-weight:bold;
-  color:var(--green);
-}
-
 input,select,textarea {
   width:100%;
   padding:12px;
-  margin:7px 0 15px;
-  border:1px solid #d5ded5;
-  border-radius:7px;
-  font-size:15px;
-}
-
-label {
-  font-weight:bold;
-  display:block;
-}
-
-textarea {
-  min-height:90px;
-  resize:vertical;
-}
-
-.btn {
-  background:var(--green);
-  color:white;
-  border:0;
-  padding:12px 16px;
-  border-radius:7px;
-  cursor:pointer;
-  font-weight:bold;
-  margin:4px 2px;
-}
-
-.btn:hover { background:var(--dark); }
-
-.secondary {
-  background:#e5f1e7;
-  color:var(--green);
-}
-
-.danger { background:#a62c2c; }
-
-.notice {
-  padding:12px;
-  background:#e9f4e9;
+  border:1px solid #cbd5e1;
   border-radius:8px;
-  margin:12px 0;
-  overflow-wrap:anywhere;
+  margin:7px 0 14px;
+  font-size:15px;
+  background:white;
 }
-
+label {font-weight:bold;font-size:14px}
+textarea {min-height:90px}
+.hidden {display:none!important}
+.auth-actions {display:grid;gap:8px}
+.product {
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  background:white;
+}
+.product img {
+  width:100%;
+  height:175px;
+  object-fit:cover;
+  background:#e2e8f0;
+}
+.product-content {padding:14px}
+.product h3 {margin:5px 0}
+.muted {color:var(--muted);font-size:13px}
+.price {color:var(--green);font-size:19px;font-weight:bold}
 .status {
   display:inline-block;
   padding:5px 9px;
   border-radius:20px;
-  background:#fff0c9;
   font-size:12px;
+  background:#fef3c7;
+  color:#92400e;
 }
-
-.status.approved {
-  background:#d8f1df;
-  color:#176b38;
+.status.approved {background:#dcfce7;color:#166534}
+.status.rejected {background:#fee2e2;color:#991b1b}
+.notice {
+  padding:12px;
+  border-radius:8px;
+  background:var(--light);
+  margin:12px 0;
+  font-size:14px;
 }
-
-.status.rejected {
-  background:#f8dddd;
-  color:#9a2222;
-}
-
-.hidden { display:none!important; }
-
 footer {
-  margin-top:40px;
-  background:#123d26;
-  color:white;
   text-align:center;
   padding:25px;
+  color:var(--muted);
 }
-
-@media(max-width:600px) {
-  header { justify-content:center; }
-  nav { justify-content:center; }
-  .hero h1 { font-size:27px; }
-  .container { padding:14px; }
+hr {border:0;border-top:1px solid var(--border);margin:18px 0}
+@media(max-width:500px) {
+  .hero h1 {font-size:27px}
+  header {align-items:flex-start}
+  nav {width:100%}
 }
 </style>
 </head>
@@ -190,782 +137,588 @@ footer {
 
 <header>
   <div class="logo">🌱 ShambaBridge</div>
-
   <nav>
-    <button onclick="showPage('home')">Home</button>
-    <button onclick="showPage('market')">Buy Produce</button>
-    <button onclick="showPage('sell')">Sell Produce</button>
-    <button onclick="showPage('account')">My Account</button>
-    <button onclick="showPage('admin')">Admin</button>
+    <button onclick="showSection('home')">Home</button>
+    <button onclick="showSection('market')">Buy</button>
+    <button onclick="showSection('sell')">Sell</button>
+    <button onclick="showSection('account')">Account</button>
+    <button onclick="showSection('admin')">Admin</button>
   </nav>
 </header>
 
-<main class="container">
+<main>
 
-<!-- HOME PAGE -->
-<section id="home" class="section active">
-
+<!-- HOME -->
+<section id="home">
   <div class="hero">
     <h1>Welcome to ShambaBridge</h1>
-
-    <p>
-      Connecting farmers, buyers and agricultural businesses.
-      Discover fresh produce, reach new markets and grow together.
-    </p>
-
-    <button class="btn" onclick="showPage('market')">
-      Explore Produce
-    </button>
-
-    <button class="btn secondary" onclick="showPage('sell')">
-      Sell Your Produce
+    <p>Connecting farmers directly with buyers.
+       Discover fresh agricultural produce and grow your business.</p>
+    <button onclick="showSection('market')">Explore marketplace</button>
+    <button onclick="showSection('sell')" style="background:white;color:#14532d">
+      Sell your produce
     </button>
   </div>
 
-  <h2>Why ShambaBridge?</h2>
-
-  <div class="grid">
-
-    <div class="card">
-      <h3>🌾 For Farmers</h3>
-      <p>List your agricultural products and reach potential buyers.</p>
+  <div class="section">
+    <h2>Our marketplace</h2>
+    <div class="grid">
+      <div>
+        <h3>🌾 For farmers</h3>
+        <p>List your produce and reach potential buyers.</p>
+      </div>
+      <div>
+        <h3>🛒 For buyers</h3>
+        <p>Discover agricultural products and contact sellers.</p>
+      </div>
+      <div>
+        <h3>🤝 Trusted listings</h3>
+        <p>Products are reviewed before appearing publicly.</p>
+      </div>
     </div>
-
-    <div class="card">
-      <h3>🛒 For Buyers</h3>
-      <p>Discover produce from different farmers and suppliers.</p>
-    </div>
-
-    <div class="card">
-      <h3>🤝 Trusted Marketplace</h3>
-      <p>Listings are reviewed before appearing publicly.</p>
-    </div>
-
   </div>
+</section>
 
-  <h2>Featured Produce</h2>
-  <div id="homeProducts" class="grid"></div>
+<!-- AUTHENTICATION -->
+<section id="account" class="hidden">
+  <div class="section">
+    <h2>ShambaBridge account</h2>
+    <p id="authStatus" class="notice">Sign in or create your account.</p>
 
+    <div id="authForms">
+
+      <h3>Email and password</h3>
+      <label>Full name (for registration)</label>
+      <input id="fullName" placeholder="Your full name">
+
+      <label>Email address</label>
+      <input id="email" type="email" placeholder="example@gmail.com">
+
+      <label>Password</label>
+      <input id="password" type="password" placeholder="Minimum 8 characters">
+
+      <div class="auth-actions">
+        <button onclick="emailSignup()">Create email account</button>
+        <button onclick="emailLogin()">Login with email</button>
+        <button class="secondary" onclick="forgotPassword()">Forgot password?</button>
+      </div>
+
+      <hr>
+
+      <h3>Phone number verification</h3>
+      <p class="muted">Enter your number with country code, e.g. +254712345678.</p>
+      <label>Phone number</label>
+      <input id="phone" type="tel" placeholder="+2547XXXXXXXX">
+
+      <label>Your name (for new phone accounts)</label>
+      <input id="phoneName" placeholder="Your full name">
+
+      <button onclick="sendPhoneCode()">Send SMS verification code</button>
+
+      <label>SMS verification code</label>
+      <input id="otp" inputmode="numeric" placeholder="6-digit code">
+
+      <button onclick="verifyPhoneCode()">Verify and login</button>
+
+      <hr>
+
+      <h3>Google account</h3>
+      <button class="google" onclick="googleLogin()">
+        Continue with Google
+      </button>
+    </div>
+
+    <div id="signedIn" class="hidden">
+      <h3>You're signed in!</h3>
+      <p id="userDetails"></p>
+      <button onclick="loadMyProducts()">My listings</button>
+      <button onclick="logout()" class="danger">Sign out</button>
+    </div>
+  </div>
 </section>
 
 <!-- MARKETPLACE -->
-<section id="market" class="section">
+<section id="market" class="hidden">
+  <div class="section">
+    <h2>Buy agricultural produce</h2>
 
-  <h2>🛒 Agricultural Marketplace</h2>
-  <p>Discover available agricultural produce.</p>
+    <input id="search" placeholder="Search products, categories or locations..."
+           oninput="filterProducts()">
 
-  <input
-    id="search"
-    placeholder="Search produce or location..."
-    oninput="renderMarket()"
-  >
-
-  <select id="categoryFilter" onchange="renderMarket()">
-    <option value="">All categories</option>
-    <option>Vegetables</option>
-    <option>Fruits</option>
-    <option>Herbs</option>
-    <option>Cereals</option>
-    <option>Livestock</option>
-    <option>Other</option>
-  </select>
-
-  <div id="marketListings" class="grid"></div>
-
+    <div id="marketProducts" class="grid">
+      <p>Loading marketplace...</p>
+    </div>
+  </div>
 </section>
 
-<!-- SELL PRODUCE -->
-<section id="sell" class="section">
+<!-- SELL -->
+<section id="sell" class="hidden">
+  <div class="section">
+    <h2>List your produce</h2>
+    <p class="muted">Sign in before submitting a product.</p>
 
-  <h2>🌱 Sell Your Produce</h2>
+    <form id="productForm">
+      <label>Product name</label>
+      <input id="productName" required placeholder="e.g. Tomatoes">
 
-  <div id="sellNotice" class="notice">
-    Please log in as a farmer before submitting produce.
+      <label>Category</label>
+      <select id="category" required>
+        <option value="">Choose category</option>
+        <option>Vegetables</option>
+        <option>Fruits</option>
+        <option>Herbs</option>
+        <option>Cereals</option>
+        <option>Legumes</option>
+        <option>Tubers</option>
+        <option>Livestock</option>
+        <option>Other</option>
+      </select>
+
+      <div class="grid">
+        <div>
+          <label>Quantity</label>
+          <input id="quantity" type="number" min="0.01" step="0.01" required>
+        </div>
+        <div>
+          <label>Unit</label>
+          <select id="unit" required>
+            <option value="kg">Kilograms</option>
+            <option value="tonnes">Tonnes</option>
+            <option value="bags">Bags</option>
+            <option value="pieces">Pieces</option>
+            <option value="crates">Crates</option>
+            <option value="bunches">Bunches</option>
+            <option value="litres">Litres</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Price per unit (KSh)</label>
+      <input id="price" type="number" min="0" step="0.01" required>
+
+      <label>Location</label>
+      <input id="location" required placeholder="County, town or village">
+
+      <label>Description</label>
+      <textarea id="description" placeholder="Quality, harvest date and other details"></textarea>
+
+      <label>Product photograph</label>
+      <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+
+      <button type="submit" id="submitProduct">Submit for approval</button>
+    </form>
+
+    <div id="sellMessage"></div>
   </div>
-
-  <form id="sellForm" class="card hidden">
-
-    <label>Product name</label>
-    <input id="productName" required placeholder="e.g. Fresh Mint">
-
-    <label>Category</label>
-    <select id="productCategory" required>
-      <option value="">Choose category</option>
-      <option>Vegetables</option>
-      <option>Fruits</option>
-      <option>Herbs</option>
-      <option>Cereals</option>
-      <option>Livestock</option>
-      <option>Other</option>
-    </select>
-
-    <label>Quantity</label>
-    <input id="quantity" type="number" min="0.01" step="any" required>
-
-    <label>Unit</label>
-    <select id="unit">
-      <option>Kg</option>
-      <option>Tonnes</option>
-      <option>Pieces</option>
-      <option>Crates</option>
-      <option>Bags</option>
-      <option>Litres</option>
-      <option>Bunches</option>
-    </select>
-
-    <label>Price per unit (KSh)</label>
-    <input id="price" type="number" min="1" required>
-
-    <label>Location</label>
-    <input id="location" required placeholder="County / Town">
-
-    <label>Contact phone</label>
-    <input id="phone" type="tel" required placeholder="07XXXXXXXX">
-
-    <label>Product image URL (optional)</label>
-    <input id="imageUrl" type="url" placeholder="https://...">
-
-    <label>Description</label>
-    <textarea id="description" placeholder="Describe your produce"></textarea>
-
-    <button class="btn" type="submit">
-      Submit for Approval
-    </button>
-
-  </form>
-
 </section>
 
-<!-- FARMER ACCOUNT -->
-<section id="account" class="section">
-
-  <h2>👤 Farmer Account</h2>
-
-  <div id="authPanel" class="card">
-
-    <div class="notice">
-      Demonstration mode only. Do not enter real passwords.
-    </div>
-
-    <label>Full name</label>
-    <input id="fullName" placeholder="Your name">
-
-    <label>Email address</label>
-    <input id="email" type="email" placeholder="Email address">
-
-    <label>Password</label>
-    <input id="password" type="password" placeholder="Password">
-
-    <button class="btn" onclick="register()">
-      Create Account
-    </button>
-
-    <button class="btn secondary" onclick="login()">
-      Log In
-    </button>
-
-    <div id="message" class="notice hidden"></div>
-
+<!-- MY LISTINGS -->
+<section id="myListings" class="hidden">
+  <div class="section">
+    <h2>My product listings</h2>
+    <div id="myProducts" class="grid"></div>
   </div>
-
-  <div id="userPanel" class="card hidden">
-
-    <h3 id="userWelcome"></h3>
-    <p>Account type: Farmer</p>
-
-    <button class="btn danger" onclick="logout()">
-      Log Out
-    </button>
-
-  </div>
-
-  <div id="farmerListings"></div>
-
 </section>
 
-<!-- ADMIN DASHBOARD -->
-<section id="admin" class="section">
-
-  <h2>🔐 Administrator Dashboard</h2>
-
-  <div id="adminLogin" class="card">
-
-    <div class="notice">
-      Demonstration credentials only. This is not production security.
-    </div>
-
-    <label>Email</label>
-    <input id="adminEmail" type="email" placeholder="Administrator email">
-
-    <label>Password</label>
-    <input id="adminPassword" type="password" placeholder="Administrator password">
-
-    <button class="btn" onclick="adminLogin()">
-      Admin Login
-    </button>
-
-    <div id="adminMessage" class="notice hidden"></div>
-
+<!-- ADMIN -->
+<section id="admin" class="hidden">
+  <div class="section">
+    <h2>Administration dashboard</h2>
+    <p class="muted">Only manually authorized administrators can manage listings.</p>
+    <button onclick="loadAdminProducts()">Refresh dashboard</button>
+    <div id="adminProducts" class="grid"></div>
   </div>
-
-  <div id="adminPanel" class="hidden">
-
-    <div class="grid">
-
-      <div class="card">
-        <h3>Total Listings</h3>
-        <h2 id="totalListings">0</h2>
-      </div>
-
-      <div class="card">
-        <h3>Pending</h3>
-        <h2 id="pendingListings">0</h2>
-      </div>
-
-      <div class="card">
-        <h3>Approved</h3>
-        <h2 id="approvedListings">0</h2>
-      </div>
-
-    </div>
-
-    <h3>Manage Produce Listings</h3>
-    <div id="adminListings" class="grid"></div>
-
-    <button class="btn danger" onclick="adminLogout()">
-      Admin Logout
-    </button>
-
-  </div>
-
 </section>
 
 </main>
 
 <footer>
-  <h3>🌱 ShambaBridge</h3>
-  <p>Connecting farmers to opportunities.</p>
-  <p>© 2026 ShambaBridge</p>
+  <strong>ShambaBridge</strong><br>
+  Connecting agriculture. Creating opportunities.<br>
+  <span class="muted">© 2026 ShambaBridge</span>
 </footer>
 
 <script>
+// =====================================================
+// 1. SUPABASE CONFIGURATION
+// =====================================================
 
-// =====================================
-// DEMONSTRATION SETTINGS
-// =====================================
+const SUPABASE_URL =
+  "https://jujpzwajlcxxnoaxsaps.supabase.co";
 
-const DEMO_ADMIN_EMAIL = "admin@shambabridge.test";
-const DEMO_ADMIN_PASSWORD = "Admin123!";
+const SUPABASE_KEY =
+  "sb_publishable_dSOZvnGKaLjFTygC-AntFA_GjV1qfmv";
+
+const { createClient } = supabase;
+
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
-let isAdmin = false;
+let allProducts = [];
 
-// Demo accounts exist only during this page session.
-let demoUsers = [];
+// =====================================================
+// 2. GENERAL HELPERS
+// =====================================================
 
-// =====================================
-// SAMPLE PRODUCTS
-// =====================================
-
-const defaultProducts = [
-
-  {
-    id:1,
-    name:"Fresh Mint",
-    category:"Herbs",
-    quantity:50,
-    unit:"Kg",
-    price:150,
-    location:"Nyamira",
-    phone:"0700000000",
-    image:"",
-    description:"Fresh mint leaves.",
-    status:"approved",
-    seller:"Demo Farmer"
-  },
-
-  {
-    id:2,
-    name:"Fresh Tomatoes",
-    category:"Vegetables",
-    quantity:100,
-    unit:"Kg",
-    price:80,
-    location:"Kisii",
-    phone:"0700000001",
-    image:"",
-    description:"Fresh farm tomatoes.",
-    status:"approved",
-    seller:"Demo Farmer"
-  },
-
-  {
-    id:3,
-    name:"Chamomile",
-    category:"Herbs",
-    quantity:20,
-    unit:"Kg",
-    price:250,
-    location:"Nyamira",
-    phone:"0700000002",
-    image:"",
-    description:"Dried chamomile flowers.",
-    status:"approved",
-    seller:"Demo Farmer"
-  }
-
-];
-
-// =====================================
-// STORAGE
-// =====================================
-
-function loadProducts() {
-
-  try {
-    const stored = localStorage.getItem("sb_demo_products");
-
-    return stored ? JSON.parse(stored) : defaultProducts;
-
-  } catch(error) {
-    return defaultProducts;
-  }
-
+function message(id, text) {
+  document.getElementById(id).textContent = text;
 }
 
-let products = loadProducts();
-
-function saveProducts() {
-  localStorage.setItem(
-    "sb_demo_products",
-    JSON.stringify(products)
-  );
-}
-
-// =====================================
-// NAVIGATION
-// =====================================
-
-function showPage(page) {
-
-  document.querySelectorAll(".section").forEach(section => {
-    section.classList.remove("active");
-  });
-
-  document.getElementById(page).classList.add("active");
-
-  if(page === "home") renderHome();
-  if(page === "market") renderMarket();
-  if(page === "account") renderAccount();
-  if(page === "sell") renderSell();
-  if(page === "admin") renderAdmin();
-
-  window.scrollTo(0,0);
-
-}
-
-// =====================================
-// SAFE HTML OUTPUT
-// =====================================
-
-function safe(value) {
-
-  return String(value ?? "").replace(/[&<>"']/g,char => ({
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
     "&":"&amp;",
     "<":"&lt;",
     ">":"&gt;",
     '"':"&quot;",
     "'":"&#39;"
   })[char]);
-
 }
 
-// =====================================
-// HOME PAGE
-// =====================================
+function showSection(id) {
+  document.querySelectorAll("main > section")
+    .forEach(section => section.classList.add("hidden"));
 
-function renderHome() {
+  const section = document.getElementById(id);
+  if (section) section.classList.remove("hidden");
 
-  const approved = products.filter(
-    p => p.status === "approved"
-  );
-
-  const container = document.getElementById("homeProducts");
-
-  container.innerHTML = approved.slice(0,3).map(p => `
-    <div class="card">
-      <h3>${safe(p.name)}</h3>
-      <p class="price">KSh ${Number(p.price).toLocaleString()} / ${safe(p.unit)}</p>
-      <p>📍 ${safe(p.location)}</p>
-    </div>
-  `).join("") || "<p>No products yet.</p>";
-
+  if (id === "market") loadProducts();
+  if (id === "admin") loadAdminProducts();
 }
 
-// =====================================
-// MARKETPLACE
-// =====================================
-
-function renderMarket() {
-
-  const search = document.getElementById("search").value.toLowerCase();
-
-  const category = document.getElementById("categoryFilter").value;
-
-  const filtered = products.filter(p =>
-
-    p.status === "approved" &&
-
-    (p.name + " " + p.location).toLowerCase().includes(search) &&
-
-    (!category || p.category === category)
-
-  );
-
-  const container = document.getElementById("marketListings");
-
-  if(!filtered.length) {
-    container.innerHTML = "<p>No approved products found.</p>";
-    return;
-  }
-
-  container.innerHTML = filtered.map(p => {
-
-    const phone = normalizePhone(p.phone);
-
-    const contactLink = phone
-      ? `https://wa.me/${phone}?text=${encodeURIComponent("Hello, I am interested in your "+p.name)}`
-      : "#";
-
-    return `
-      <div class="card">
-
-        ${
-          p.image
-          ? `<img class="product-image" src="${safe(p.image)}" alt="${safe(p.name)}" loading="lazy" onerror="this.style.display='none'">`
-          : `<div class="product-image" style="display:grid;place-items:center;font-size:45px">🌾</div>`
-        }
-
-        <h3>${safe(p.name)}</h3>
-
-        <span class="status approved">Approved</span>
-
-        <p>${safe(p.description)}</p>
-
-        <p>Quantity: ${safe(p.quantity)} ${safe(p.unit)}</p>
-
-        <p class="price">
-          KSh ${Number(p.price).toLocaleString()} / ${safe(p.unit)}
-        </p>
-
-        <p>📍 ${safe(p.location)}</p>
-
-        <p>Seller: ${safe(p.seller)}</p>
-
-        ${
-          phone
-          ? `<a href="${contactLink}" target="_blank" rel="noopener noreferrer">
-              <button class="btn">Contact Seller</button>
-             </a>`
-          : "<p>Contact details unavailable.</p>"
-        }
-
-      </div>
-    `;
-
-  }).join("");
-
+function formatMoney(value) {
+  return Number(value).toLocaleString("en-KE");
 }
 
-// =====================================
-// FARMER REGISTRATION
-// =====================================
+function setAuthStatus(text) {
+  message("authStatus", text);
+}
 
-function register() {
+// =====================================================
+// 3. EMAIL REGISTRATION
+// =====================================================
 
+async function emailSignup() {
   const name = document.getElementById("fullName").value.trim();
-
-  const email = document.getElementById("email").value.trim().toLowerCase();
-
+  const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
-  if(!name || !email || password.length < 6) {
-    showMessage("Enter your name, email and password of at least 6 characters.");
-    return;
+  if (!name || !email || password.length < 8) {
+    return alert("Enter your name, email and a password of at least 8 characters.");
   }
 
-  if(demoUsers.some(user => user.email === email)) {
-    showMessage("This account already exists in this demonstration session.");
-    return;
-  }
+  setAuthStatus("Creating your account...");
 
-  demoUsers.push({
-    name,
+  const { data, error } = await db.auth.signUp({
     email,
     password,
-    role:"farmer"
+    options: {
+      data: { full_name: name },
+      emailRedirectTo: window.location.origin
+    }
   });
 
-  showMessage("Account created! You can now log in. This demonstration account will reset when the page is refreshed.");
+  if (error) return setAuthStatus(error.message);
 
+  if (data.session) {
+    setAuthStatus("Registration successful.");
+  } else {
+    setAuthStatus("Account created. Check your email for the confirmation link.");
+  }
 }
 
-// =====================================
-// FARMER LOGIN
-// =====================================
+// =====================================================
+// 4. EMAIL LOGIN
+// =====================================================
 
-function login() {
-
-  const email = document.getElementById("email").value.trim().toLowerCase();
-
+async function emailLogin() {
+  const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
-  const user = demoUsers.find(u =>
-    u.email === email && u.password === password
-  );
+  if (!email || !password) return alert("Enter email and password.");
 
-  if(!user) {
-    showMessage("Invalid login. Register first in this browser session.");
-    return;
-  }
+  setAuthStatus("Signing in...");
 
-  currentUser = user;
+  const { error } = await db.auth.signInWithPassword({
+    email,
+    password
+  });
 
-  renderAccount();
+  if (error) return setAuthStatus(error.message);
 
+  setAuthStatus("Welcome back!");
 }
 
-// =====================================
-// ACCOUNT DASHBOARD
-// =====================================
+// =====================================================
+// 5. PASSWORD RECOVERY
+// =====================================================
 
-function renderAccount() {
+async function forgotPassword() {
+  const email = document.getElementById("email").value.trim();
 
-  const auth = document.getElementById("authPanel");
+  if (!email) return alert("Enter your email address first.");
 
-  const panel = document.getElementById("userPanel");
+  const { error } = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
 
-  const listings = document.getElementById("farmerListings");
+  if (error) return alert(error.message);
 
-  if(!currentUser) {
-
-    auth.classList.remove("hidden");
-    panel.classList.add("hidden");
-    listings.innerHTML = "";
-
-    return;
-  }
-
-  auth.classList.add("hidden");
-  panel.classList.remove("hidden");
-
-  document.getElementById("userWelcome").textContent =
-    "Welcome, " + currentUser.name;
-
-  const mine = products.filter(p => p.seller === currentUser.name);
-
-  listings.innerHTML = "<h3>Your submitted listings</h3>" +
-
-    mine.map(p => `
-      <div class="card">
-        <h3>${safe(p.name)}</h3>
-        <p>Price: KSh ${Number(p.price).toLocaleString()}</p>
-        <span class="status ${safe(p.status)}">${safe(p.status)}</span>
-      </div>
-    `).join("") || "<p>You have no listings yet.</p>";
-
+  alert("If the account exists, a password recovery email has been sent.");
 }
 
-// =====================================
-// LOGOUT
-// =====================================
+// =====================================================
+// 6. PHONE OTP REGISTRATION / LOGIN
+// =====================================================
 
-function logout() {
-
-  currentUser = null;
-
-  renderAccount();
-
-  showMessage("You have logged out.");
-
-}
-
-// =====================================
-// SELL PRODUCE
-// =====================================
-
-function renderSell() {
-
-  const notice = document.getElementById("sellNotice");
-
-  const form = document.getElementById("sellForm");
-
-  if(currentUser && currentUser.role === "farmer") {
-
-    notice.textContent = "Welcome! Submit your produce for approval.";
-
-    form.classList.remove("hidden");
-
-  } else {
-
-    notice.textContent = "Please log in as a farmer before submitting produce.";
-
-    form.classList.add("hidden");
-
-  }
-
-}
-
-document.getElementById("sellForm").addEventListener("submit",function(event) {
-
-  event.preventDefault();
-
-  if(!currentUser || currentUser.role !== "farmer") {
-    alert("Please log in as a farmer first.");
-    return;
-  }
-
+async function sendPhoneCode() {
   const phone = document.getElementById("phone").value.trim();
+  const name = document.getElementById("phoneName").value.trim();
 
-  if(!normalizePhone(phone)) {
-    alert("Enter a valid Kenyan phone number.");
-    return;
+  if (!/^\+[1-9]\d{7,14}$/.test(phone)) {
+    return alert("Enter a valid international phone number, e.g. +254712345678.");
   }
 
-  const product = {
+  setAuthStatus("Sending SMS code...");
 
-    id:Date.now(),
-
-    name:document.getElementById("productName").value.trim(),
-
-    category:document.getElementById("productCategory").value,
-
-    quantity:Number(document.getElementById("quantity").value),
-
-    unit:document.getElementById("unit").value,
-
-    price:Number(document.getElementById("price").value),
-
-    location:document.getElementById("location").value.trim(),
-
+  const { error } = await db.auth.signInWithOtp({
     phone,
+    options: {
+      shouldCreateUser: true,
+      data: { full_name: name }
+    }
+  });
 
-    image:document.getElementById("imageUrl").value.trim(),
+  if (error) return setAuthStatus(error.message);
 
-    description:document.getElementById("description").value.trim(),
+  setAuthStatus("SMS sent. Enter the code you received.");
+}
 
-    seller:currentUser.name,
+async function verifyPhoneCode() {
+  const phone = document.getElementById("phone").value.trim();
+  const token = document.getElementById("otp").value.trim();
 
-    status:"pending"
+  if (!phone || !token) return alert("Enter phone number and SMS code.");
 
-  };
+  const { error } = await db.auth.verifyOtp({
+    phone,
+    token,
+    type: "sms"
+  });
 
-  if(
-    !product.name ||
-    !product.category ||
-    !product.location ||
-    product.quantity <= 0 ||
-    product.price <= 0
-  ) {
-    alert("Check all required product details.");
-    return;
+  if (error) return setAuthStatus(error.message);
+
+  setAuthStatus("Phone verified. Welcome to ShambaBridge!");
+}
+
+// =====================================================
+// 7. GOOGLE LOGIN
+// =====================================================
+
+async function googleLogin() {
+  const { error } = await db.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin
+    }
+  });
+
+  if (error) alert(error.message);
+}
+
+// =====================================================
+// 8. LOGOUT
+// =====================================================
+
+async function logout() {
+  const { error } = await db.auth.signOut();
+
+  if (error) return alert(error.message);
+
+  showSection("home");
+}
+
+// =====================================================
+// 9. AUTHENTICATION STATE
+// =====================================================
+
+async function refreshAccount() {
+  const { data } = await db.auth.getUser();
+  currentUser = data.user;
+
+  const loggedIn = Boolean(currentUser);
+
+  document.getElementById("authForms")
+    .classList.toggle("hidden", loggedIn);
+
+  document.getElementById("signedIn")
+    .classList.toggle("hidden", !loggedIn);
+
+  if (loggedIn) {
+    document.getElementById("userDetails").textContent =
+      currentUser.email || currentUser.phone || currentUser.id;
+
+    setAuthStatus("You are signed in.");
+  } else {
+    setAuthStatus("Sign in or create your account.");
   }
+}
 
-  products.push(product);
+db.auth.onAuthStateChange((event, session) => {
+  currentUser = session?.user || null;
 
-  saveProducts();
+  setTimeout(() => refreshAccount(), 0);
 
-  this.reset();
-
-  alert("Your product has been submitted for administrator approval.");
-
-  renderAccount();
-
-  showPage("account");
-
+  if (event === "PASSWORD_RECOVERY") {
+    showSection("account");
+    const newPassword = prompt("Enter your new password (at least 8 characters):");
+    if (newPassword && newPassword.length >= 8) {
+      db.auth.updateUser({ password: newPassword })
+        .then(({error}) => {
+          alert(error ? error.message : "Password updated.");
+        });
+    }
+  }
 });
 
-// =====================================
-// KENYAN PHONE NUMBER NORMALIZATION
-// =====================================
+// =====================================================
+// 10. PRODUCT IMAGE UPLOAD
+// =====================================================
 
-function normalizePhone(value) {
+async function uploadImage(file) {
+  if (!file) return null;
 
-  let phone = String(value || "").replace(/\D/g,"");
-
-  if(phone.startsWith("0") && phone.length === 10) {
-    phone = "254" + phone.substring(1);
+  if (!["image/jpeg","image/png","image/webp"].includes(file.type)) {
+    throw new Error("Use JPG, PNG or WEBP images.");
   }
 
-  if(phone.startsWith("254") && phone.length === 12) {
-    return phone;
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("Image must be smaller than 5 MB.");
   }
 
-  return null;
+  const extension = file.type.split("/")[1].replace("jpeg","jpg");
+  const path = `${currentUser.id}/${crypto.randomUUID()}.${extension}`;
 
+  const { error } = await db.storage
+    .from("product-images")
+    .upload(path, file, { upsert: false });
+
+  if (error) throw error;
+
+  const { data } = db.storage
+    .from("product-images")
+    .getPublicUrl(path);
+
+  return data.publicUrl;
 }
 
-// =====================================
-// ADMIN LOGIN
-// =====================================
+// =====================================================
+// 11. SELL PRODUCTS
+// =====================================================
 
-function adminLogin() {
+document.getElementById("productForm")
+.addEventListener("submit", async event => {
+  event.preventDefault();
 
-  const email = document.getElementById("adminEmail").value.trim();
-
-  const password = document.getElementById("adminPassword").value;
-
-  const message = document.getElementById("adminMessage");
-
-  if(
-    email === DEMO_ADMIN_EMAIL &&
-    password === DEMO_ADMIN_PASSWORD
-  ) {
-
-    isAdmin = true;
-
-    document.getElementById("adminLogin").classList.add("hidden");
-
-    document.getElementById("adminPanel").classList.remove("hidden");
-
-    renderAdmin();
-
-  } else {
-
-    message.textContent = "Invalid demonstration administrator credentials.";
-
-    message.classList.remove("hidden");
-
+  if (!currentUser) {
+    alert("Please sign in before listing products.");
+    return showSection("account");
   }
 
+  const button = document.getElementById("submitProduct");
+  button.disabled = true;
+  button.textContent = "Submitting...";
+
+  try {
+    const file = document.getElementById("photo").files[0];
+    const imageUrl = await uploadImage(file);
+
+    const product = {
+      farmer_id: currentUser.id,
+      product_name: document.getElementById("productName").value.trim(),
+      category: document.getElementById("category").value,
+      quantity: Number(document.getElementById("quantity").value),
+      unit: document.getElementById("unit").value,
+      price: Number(document.getElementById("price").value),
+      location: document.getElementById("location").value.trim(),
+      description: document.getElementById("description").value.trim(),
+      image_url: imageUrl,
+      approval_status: "pending"
+    };
+
+    if (!product.product_name || !product.location ||
+        product.quantity <= 0 || product.price < 0) {
+      throw new Error("Please check all required product details.");
+    }
+
+    const { error } = await db.from("products").insert(product);
+
+    if (error) throw error;
+
+    document.getElementById("productForm").reset();
+
+    message("sellMessage",
+      "Success! Your product has been submitted for admin approval.");
+
+  } catch (error) {
+    message("sellMessage", error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = "Submit for approval";
+  }
+});
+
+// =====================================================
+// 12. LOAD APPROVED MARKETPLACE PRODUCTS
+// =====================================================
+
+async function loadProducts() {
+  const container = document.getElementById("marketProducts");
+  container.textContent = "Loading products...";
+
+  const { data, error } = await db
+    .from("products")
+    .select("*")
+    .eq("approval_status", "approved")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    container.textContent = error.message;
+    return;
+  }
+
+  allProducts = data || [];
+  renderProducts(allProducts, container, false);
 }
 
-// =====================================
-// ADMIN LOGOUT
-// =====================================
+// =====================================================
+// 13. RENDER PRODUCT CARDS
+// =====================================================
 
-function adminLogout() {
+function renderProducts(products, container, showStatus) {
+  container.replaceChildren();
 
-  isAdmin = false;
+  if (!products.length) {
+    container.textContent = "No products found.";
+    return;
+  }
 
-  document.getElementById("adminLogin").classList.remove("hidden");
+  products.forEach(product => {
+    const card = document.createElement("article");
+    card.className = "product";
 
-  document.getElementById("adminPanel").classList.add("hidden");
+    const image = product.image_url
+      ? `<img src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.product_name)}" loading="lazy">`
+      : `<div style="height:175px;display:grid;place-items:center;background:#f0fdf4;font-size:48px">🌾</div>`;
 
-}
+    const contact = product.farmer_id === currentUser?.id
+      ? "Your listing"
+      : `<button onclick="contactFarmer('${product.farmer_id}')">Contact farmer</button>`;
 
-// =====================================
-// ADMIN DASHBOARD
-// =====================================
-
-function renderAdmin() {
-
-  if(!isAdmin) return;
-
-  document.getElementById("totalListings").textContent = products.length;
-
-  document.getElementById("pendingListings").textContent =
-    products.filter(p => p.status === "pending").length;
-
-  document.getElementById("approvedListings").textContent =
-    products.filter(p => p.status === "approv
+    card.innerHTML = `
+      ${image}
+      <div class="product-content">
+        <h3>${escapeHtml(product.product_name)}</h3>
+        <p class="muted">${escapeHtml(product.category)} · ${escapeHtml(product.location)}</p>
+        <p class="price">KSh ${formatMoney(product.price)} / ${escapeHtml(product.unit)}</p>
+        <p>${escapeHtml(product.quantity)} ${escapeHtml(product.unit)} available</p>
+        <p class="muted">${escapeHtml(product.descriptio
